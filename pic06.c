@@ -80,7 +80,7 @@ void pwm6_init(void)
 void pwm6_set_duty(float ms)
 {
     if (ms < 0.0) ms = 0.0;
-    if (ms > 2.0) ms = 2.0;
+    if (ms > 2.5) ms = 2.5;
     
     uint16_t duty = (uint16_t)((ms / 16.384) * 1023);
     PWM6DCH = (uint8_t)(duty >> 2);
@@ -94,11 +94,11 @@ void main(void)
     
     pwm6_init();
     while (1) {
-        for (float i = 0.0; i <= 2.0; i = i + 0.5) {
+        for (float i = 0.0; i <= 2.5; i = i + 0.5) {
             pwm6_set_duty(i);
             __delay_ms(1000);
         }
-        for (float i = 2.0; i >= 0.0; i = i - 0.5) {
+        for (float i = 2.5; i >= 0.0; i = i - 0.5) {
             pwm6_set_duty(i);
             __delay_ms(1000);
         }
