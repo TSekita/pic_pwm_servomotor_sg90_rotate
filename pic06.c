@@ -5,7 +5,7 @@
 
 // CONFIG1
 #pragma config FEXTOSC = OFF    // External Oscillator mode selection bits (Oscillator not enabled)
-// #pragma config RSTOSC = HFINT1  // Power-up default value for COSC bits (HFINTOSC (1MHz))
+#pragma config RSTOSC = HFINT1  // Power-up default value for COSC bits (HFINTOSC (1MHz))
 #pragma config CLKOUTEN = OFF   // Clock Out Enable bit (CLKOUT function is disabled; i/o or oscillator function on OSC2)
 #pragma config CSWEN = ON       // Clock Switch Enable bit (Writing to NOSC and NDIV is allowed)
 #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (FSCM timer disabled)
@@ -17,7 +17,7 @@
 #pragma config BOREN = ON       // Brown-out reset enable bits (Brown-out Reset Enabled, SBOREN bit is ignored)
 #pragma config BORV = LO        // Brown-out Reset Voltage Selection (Brown-out Reset Voltage (VBOR) set to 1.9V on LF, and 2.45V on F Devices)
 #pragma config ZCD = OFF        // Zero-cross detect disable (Zero-cross detect circuit is disabled at POR.)
-#pragma config PPS1WAY = ON     // Peripheral Pin Select one-way control (The PPSLOCK bit can be cleared and set only once in software)
+#pragma config PPS1WAY = OFF     // Peripheral Pin Select one-way control (The PPSLOCK bit can be cleared and set only once in software)
 #pragma config STVREN = OFF     // Stack Overflow/Underflow Reset Enable bit (Stack Overflow or Underflow will not cause a reset)
 
 // CONFIG3
@@ -79,10 +79,10 @@ void pwm6_init(void)
 
 void pwm6_set_duty(float ms)
 {
-    if (ms < 1.0) ms = 1.0;
+    if (ms < 0.0) ms = 0.0;
     if (ms > 2.0) ms = 2.0;
     
-    uint16_t duty = (uint16_t)((ms / 20.0) * 1023);
+    uint16_t duty = (uint16_t)((ms / 16.384) * 1023);
     PWM6DCH = (uint8_t)(duty >> 2);
     PWM6DCL = (uint8_t)((duty & 0x03) << 6);
 }
@@ -94,11 +94,11 @@ void main(void)
     
     pwm6_init();
     while (1) {
-        for (float i = 1.0; i <= 2.0; i = i + 0.1) {
+        for (float i = 0.0; i <= 2.0; i = i + 0.5) {
             pwm6_set_duty(i);
             __delay_ms(1000);
         }
-        for (float i = 2.0; i >= 1.0; i = i - 0.1) {
+        for (float i = 2.0; i >= 0.0; i = i - 0.5) {
             pwm6_set_duty(i);
             __delay_ms(1000);
         }
