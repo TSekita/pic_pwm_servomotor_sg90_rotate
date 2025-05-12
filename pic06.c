@@ -79,9 +79,10 @@ void pwm6_init(void)
 
 void pwm6_set_duty(float ms)
 {
-    if (ms < 0.0) ms = 0.0;
-    if (ms > 2.5) ms = 2.5;
+    if (ms < 0.5) ms = 0.5;                             // about 0 degrees
+    if (ms > 2.5) ms = 2.5;                             // about 180 degrees
     
+    // 16.384 = (PR2 + 1) * 4 / fosc * prescaler = (255 + 1) * 4 / (4 * 10^6) * 64
     uint16_t duty = (uint16_t)((ms / 16.384) * 1023);
     PWM6DCH = (uint8_t)(duty >> 2);
     PWM6DCL = (uint8_t)((duty & 0x03) << 6);
@@ -94,13 +95,13 @@ void main(void)
     
     pwm6_init();
     while (1) {
-        for (float i = 0.0; i <= 2.5; i = i + 0.5) {
-            pwm6_set_duty(i);
-            __delay_ms(1000);
+        for (float i = 0.5; i <= 2.5; i = i + 0.05) {
+            pwm6_set_duty(i);   // SG90 MAX rotate speeds is 0.1[s] / 60[degrees]
+            __delay_ms(400);    // Movable angle is 0 - 180[degrees]
         }
-        for (float i = 2.5; i >= 0.0; i = i - 0.5) {
+        for (float i = 2.5; i >= 0.5; i = i - 0.05) {
             pwm6_set_duty(i);
-            __delay_ms(1000);
+            __delay_ms(400);
         }
     }
 }
